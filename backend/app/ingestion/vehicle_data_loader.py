@@ -1,7 +1,9 @@
+from locale import normalize
 from pathlib import Path
 import pandas as pd
 
 # --------------------------------------------------
+
 # STEP 1: Locate the project root directory
 # --------------------------------------------------
 
@@ -28,9 +30,7 @@ DATASET_DIR = PROJECT_ROOT / "datasets" / "raw" / "kit"
 
 
 def load_vehicle_data():
-
     try:
-
         # Find all CSV files available in the dataset folder.
         # sorted() arranges filenames alphabetically.
 
@@ -122,10 +122,117 @@ def load_vehicle_data():
             print(f"Total Duplicate Records: {total_duplicates}")
 
         # --------------------------------------------------
-        # STEP 9: Return the loaded DataFrame
+        # STEP 9: Analyse column data types
         # --------------------------------------------------
 
-        return df
+        # Display the data type of every column.
+
+        print("\n--- Dataset Data Types ---")
+        print(df.dtypes)
+
+        # --------------------------------------------------
+        # STEP 10: Statistical analysis of numerical data
+        # --------------------------------------------------
+
+        # Generate statistical summary for numerical columns.
+
+        print("\n--- Numerical Data Statistics ---")
+        print(df.describe())
+
+        # --------------------------------------------------
+        # STEP 11: Analyse vehicle fault distribution
+        # --------------------------------------------------
+
+        # Count the number of records for each fault category.
+
+        print("\n--- Vehicle Fault Distribution ---")
+        print(df["fault_label"].value_counts())
+
+        print("\n--- Fault Distribution Percentage ---")
+
+        fault_percentage = df["fault_label"].value_counts(normalize=True) * 100
+
+        # Round percentages to two decimal places.
+
+        print(fault_percentage.round(2))
+
+        print(df["vehicle_id"].unique())
+        print(df["vehicle_id"].value_counts())
+
+        print(df["vehicle_id"].nunique())
+
+        # --------------------------------------------------
+        # STEP 14: Timestamp Analysis
+        # --------------------------------------------------
+
+        print("\n--- Timestamp Data Type ---")
+        print(df["timestamp"].dtype)
+
+        # --------------------------------------------------
+        # STEP 15: Convert Timestamp to Datetime
+        # --------------------------------------------------
+
+        # Convert timestamp column from string to datetime format using panda.
+        df["timestamp"] = pd.to_datetime(df["timestamp"])
+
+        # Verify the converted data type.
+        print("\n--- Converted Timestamp Data Type ---")
+        print(df["timestamp"].dtype)
+
+        # --------------------------------------------------
+        # STEP 16: Analyse Timestamp Range
+        # --------------------------------------------------
+
+        # Find the earliest timestamp.
+        print("\n--- Earliest Timestamp ---")
+        print(df["timestamp"].min())
+
+        # Find the latest timestamp.
+        print("\n--- Latest Timestamp ---")
+        print(df["timestamp"].max())
+
+        # --------------------------------------------------
+        # STEP 17: Calculate Data Collection Duration
+        # --------------------------------------------------
+
+        # Calculate the difference between latest and earliest timestamps.
+        duration = df["timestamp"].max() - df["timestamp"].min()
+
+        # Display total data collection duration.
+        print("\n--- Data Collection Duration ---")
+        print(duration)
+
+        df["date"] = df["timestamp"].dt.date
+        print(df.shape[1])
+
+        # --------------------------------------------------
+        # STEP 18: Extract Date from Timestamp
+        # --------------------------------------------------
+
+        # Extract only the date from the timestamp column.
+        df["date"] = df["timestamp"].dt.date
+
+        # Display the newly created date column.
+        print("\n--- Extracted Date ---")
+        print(df["date"].head())
+
+        # Display the updated total number of columns.
+        print("\n--- Total Number of Columns ---")
+        print(len(df.columns))
+
+        # --------------------------------------------------
+        # STEP 19: Count Vehicle Records Per Day
+        # --------------------------------------------------
+
+        # Count the number of records for each date.
+        daily_records = df["date"].value_counts()
+
+        # Sort dates in chronological order.
+        daily_records = daily_records.sort_index()
+
+        # Display daily record counts.
+        print("\n--- Vehicle Records Per Day ---")
+        print(daily_records)
 
     # --------------------------------------------------
     # STEP 10: Handle exceptions
@@ -146,7 +253,7 @@ def load_vehicle_data():
     except Exception as error:
         print(f"Unexpected Error: {error}")
 
-    return None
+        return None
 
 
 # --------------------------------------------------
@@ -154,4 +261,5 @@ def load_vehicle_data():
 # --------------------------------------------------
 
 if __name__ == "__main__":
+
     vehicle_df = load_vehicle_data()
