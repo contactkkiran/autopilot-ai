@@ -234,6 +234,55 @@ def load_vehicle_data():
         print("\n--- Vehicle Records Per Day ---")
         print(daily_records)
 
+        vehicle_daily_records = df.groupby(["vehicle_id", "date"]).size()
+
+        # --------------------------------------------------
+        # STEP 20: Analyse Records Per Vehicle Per Day
+        # --------------------------------------------------
+
+        # Group records by vehicle ID and date.
+        vehicle_daily_records = df.groupby(["vehicle_id", "date"]).size()
+
+        # Display the record counts.
+        print("\n--- Records Per Vehicle Per Day ---")
+        print(vehicle_daily_records)
+
+        # --------------------------------------------------
+        # STEP 21: Convert Grouped Records into DataFrame
+        # --------------------------------------------------
+
+        # Convert the grouped Series into a new DataFrame.
+        daily_vehicle_summary_dataframe = vehicle_daily_records.reset_index(
+            name="record_count"
+        )
+
+        # Display the summary DataFrame.
+        print("\n--- Daily Vehicle Summary Dataset ---")
+        print(daily_vehicle_summary_dataframe.head(10))
+
+        # Display the total number of columns.
+        print("\n--- Total Columns ---")
+        print(len(daily_vehicle_summary_dataframe.columns))
+
+        # --------------------------------------------------
+        # STEP 22: Calculate Total Records for Each Vehicle
+        # --------------------------------------------------
+
+        # Group the daily summary by vehicle ID.
+        # Sum the record_count for each vehicle.
+        vehicle_record_summary_dataframe = (
+            daily_vehicle_summary_dataframe.groupby("vehicle_id")["record_count"]
+            .sum()
+            .reset_index(name="total_records")
+        )
+
+        # Display the vehicle record summary.
+        print("\n--- Total Records Per Vehicle ---")
+        print(vehicle_record_summary_dataframe)
+
+        # Display the total number of vehicles.
+        print("\n--- Total Vehicles ---")
+        print(len(vehicle_record_summary_dataframe))
     # --------------------------------------------------
     # STEP 10: Handle exceptions
     # --------------------------------------------------
