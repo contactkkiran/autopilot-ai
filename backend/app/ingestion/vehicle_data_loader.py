@@ -283,10 +283,105 @@ def load_vehicle_data():
         # Display the total number of vehicles.
         print("\n--- Total Vehicles ---")
         print(len(vehicle_record_summary_dataframe))
-    # --------------------------------------------------
-    # STEP 10: Handle exceptions
-    # --------------------------------------------------
+        print(vehicle_record_summary_dataframe.head(10))
 
+        # average daily count
+        # --------------------------------------------------
+        # STEP 23: Calculate Average Daily Records Per Vehicle
+        # --------------------------------------------------
+        vehicle_summary_dataframe = vehicle_average_daily_records = (
+            daily_vehicle_summary_dataframe.groupby("vehicle_id")["record_count"]
+            .mean()
+            .reset_index(name="average_daily_records")
+        )
+        # Display the average daily records.
+        print("\n--- Average Daily Records Per Vehicle ---")
+        print(vehicle_average_daily_records)
+
+        # --------------------------------------------------
+        # STEP 24: Calculate Maximum Daily Records Per Vehicle
+        # Group daily summary records by vehicle ID.
+        # Calculate the maximum daily record count for each vehicle.
+        vehicle_max_daily_records = (
+            daily_vehicle_summary_dataframe.groupby("vehicle_id")["record_count"]
+            .max()
+            .reset_index(name="maximum_daily_records")
+        )
+
+        # Display the maximum daily records.
+        print("\n--- Maximum Daily Records Per Vehicle ---")
+        print(vehicle_max_daily_records)
+
+        # --------------------------------------------------
+        # STEP 25: Calculate Minimum Daily Records Per Vehicle
+        # --------------------------------------------------
+
+        # Group daily summary records by vehicle ID.
+        # Calculate the minimum daily record count for each vehicle.
+        vehicle_min_daily_records = (
+            daily_vehicle_summary_dataframe.groupby("vehicle_id")["record_count"]
+            .min()
+            .reset_index(name="minimum_daily_records")
+        )
+
+        # Display the minimum daily records.
+        print("\n--- Minimum Daily Records Per Vehicle ---")
+        print(vehicle_min_daily_records)
+
+        print("\n--- Consolidated Vehicle Summary ---")
+        print(vehicle_summary_dataframe)
+
+        # Display the total number of columns.
+        print("\n--- Total Columns ---")
+        print(len(vehicle_summary_dataframe.columns))
+
+        # --------------------------------------------------
+        # STEP 26: Consolidate Vehicle Statistics
+        # --------------------------------------------------
+
+        # Merge total records with average daily records.
+        vehicle_summary_dataframe = vehicle_record_summary_dataframe.merge(
+            vehicle_average_daily_records, on="vehicle_id"
+        )
+
+        # Merge maximum daily records.
+        vehicle_summary_dataframe = vehicle_summary_dataframe.merge(
+            vehicle_max_daily_records, on="vehicle_id"
+        )
+
+        # Merge minimum daily records.
+        vehicle_summary_dataframe = vehicle_summary_dataframe.merge(
+            vehicle_min_daily_records, on="vehicle_id"
+        )
+
+        # Display the consolidated vehicle summary.
+        print("\n--- Consolidated Vehicle Summary ---")
+        print(vehicle_summary_dataframe)
+
+        # Display the total number of columns.
+        print("\n--- Total Columns ---")
+        print(len(vehicle_summary_dataframe.columns))
+
+        # --------------------------------------------------
+        # STEP 27: Calculate Vehicle Record Contribution
+        # --------------------------------------------------
+
+        # Calculate the total number of records across all vehicles.
+        total_dataset_records = vehicle_summary_dataframe["total_records"].sum()
+
+        # Calculate each vehicle's percentage contribution.
+        vehicle_summary_dataframe["record_contribution_pct"] = (
+            vehicle_summary_dataframe["total_records"] / total_dataset_records
+        ) * 100
+
+        # Round percentages to two decimal places.
+        vehicle_summary_dataframe["record_contribution_pct"] = (
+            vehicle_summary_dataframe["record_contribution_pct"].round(2)
+        )
+
+        # Display the updated vehicle summary.
+        print("\n--- Vehicle Record Contribution ---")
+        print(vehicle_summary_dataframe)
     except FileNotFoundError as error:
         print(f"File Error: {error}")
 
